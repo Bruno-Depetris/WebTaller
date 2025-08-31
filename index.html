@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Taller - Frontend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab-button:hover {
+            background: rgba(255,255,255,1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .tab-button.active {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .content {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d63031;
+        }
+
+        .success {
+            background: #e6ffe6;
+            color: #00b894;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00b894;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 Sistema de Taller</h1>
+            <p class="subtitle">Gestión completa de repuestos, clientes y servicios</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showSection('repuestos')">Repuestos</button>
+            <button class="tab-button" onclick="showSection('clientes')">Clientes</button>
+            <button class="tab-button" onclick="showSection('servicios')">Servicios</button>
+            <button class="tab-button" onclick="showSection('reparaciones')">Reparaciones</button>
+            <button class="tab-button" onclick="showSection('maquinas')">Máquinas</button>
+        </div>
+
+        <div class="content">
+            <!-- Sección Repuestos -->
+            <div id="repuestos" class="section active">
+                <h2>Gestión de Repuestos</h2>
+                <div class="grid">
+                    <div>
+                        <h3>Agregar Repuesto</h3>
+                        <form id="repuestoForm">
+                            <div class="form-group">
+                                <label>Nombre:</label>
+                                <input type="text" id="repuesto-nombre" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Precio:</label>
+                                    <input type="number" id="repuesto-precio" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Stock:</label>
+                                    <input type="number" id="repuesto-stock" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn">Agregar Repuesto</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="loadRepuestos()">🔄 Cargar Repuestos</button>
+                <div id="repuestos-data"></div>
+            </div>
+
+            <!-- Sección Clientes -->
+            <div id="clientes" class="section">
+                <h2>Gestión de Clientes</h2>
+                <div class="grid">
+                    <div>
+                        <h3>Agregar Cliente</h3>
+                        <form id="clienteForm">
+                            <div class="form-group">
+                                <label>Nombre:</label>
+                                <input type="text" id="cliente-nombre" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email:</label>
+                                    <input type="email" id="cliente-email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Teléfono:</label>
+                                    <input type="tel" id="cliente-telefono">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Dirección:</label>
+                                <textarea id="cliente-direccion" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn">Agregar Cliente</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="loadClientes()">🔄 Cargar Clientes</button>
+                <div id="clientes-data"></div>
+            </div>
+
+            <!-- Sección Servicios -->
+            <div id="servicios" class="section">
+                <h2>Gestión de Servicios</h2>
+                <div class="grid">
+                    <div>
+                        <h3>Agregar Servicio</h3>
+                        <form id="servicioForm">
+                            <div class="form-group">
+                                <label>Nombre del Servicio:</label>
+                                <input type="text" id="servicio-nombre" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Precio:</label>
+                                    <input type="number" id="servicio-precio" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Duración (horas):</label>
+                                    <input type="number" id="servicio-duracion" step="0.5">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Descripción:</label>
+                                <textarea id="servicio-descripcion" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn">Agregar Servicio</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="loadServicios()">🔄 Cargar Servicios</button>
+                <div id="servicios-data"></div>
+            </div>
+
+            <!-- Sección Reparaciones -->
+            <div id="reparaciones" class="section">
+                <h2>Gestión de Reparaciones</h2>
+                <button class="btn" onclick="loadReparaciones()">🔄 Cargar Reparaciones</button>
+                <div id="reparaciones-data"></div>
+            </div>
+
+            <!-- Sección Máquinas -->
+            <div id="maquinas" class="section">
+                <h2>Gestión de Máquinas</h2>
+                <div class="grid">
+                    <div>
+                        <h3>Agregar Máquina</h3>
+                        <form id="maquinaForm">
+                            <div class="form-group">
+                                <label>Nombre/Modelo:</label>
+                                <input type="text" id="maquina-nombre" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Marca:</label>
+                                    <input type="text" id="maquina-marca">
+                                </div>
+                                <div class="form-group">
+                                    <label>Año:</label>
+                                    <input type="number" id="maquina-año" min="1900" max="2030">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Número de Serie:</label>
+                                <input type="text" id="maquina-serie">
+                            </div>
+                            <button type="submit" class="btn">Agregar Máquina</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="loadMaquinas()">🔄 Cargar Máquinas</button>
+                <div id="maquinas-data"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL base de tu API
+        const API_BASE = 'http://apitaller.somee.com/api';
+
+        // Función para mostrar secciones
+        function showSection(sectionName) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remover clase active de todos los botones
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Activar el botón correspondiente
+            event.target.classList.add('active');
+        }
+
+        // Función para mostrar mensajes
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            // Insertar el mensaje al inicio del contenido
+            const content = document.querySelector('.content');
+            content.insertBefore(messageDiv, content.firstChild);
+            
+            // Remover el mensaje después de 5 segundos
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Función genérica para hacer peticiones a la API
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const config = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                if (data) {
+                    config.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(`${API_BASE}/${endpoint}`, config);
+                
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error en la petición:', error);
+                showMessage(`Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Función para crear tabla genérica
+        function createTable(data, columns) {
+            if (!data || data.length === 0) {
+                return '<p class="loading">No hay datos disponibles</p>';
+            }
+
+            let html = '<table class="data-table"><thead><tr>';
+            
+            // Crear headers
+            columns.forEach(col => {
+                html += `<th>${col.label}</th>`;
+            });
+            html += '<th>Acciones</th></tr></thead><tbody>';
+            
+            // Crear filas
+            data.forEach(item => {
+                html += '<tr>';
+                columns.forEach(col => {
+                    const value = item[col.key] || '';
+                    html += `<td>${value}</td>`;
+                });
+                html += `<td>
+                    <button class="btn btn-danger" onclick="deleteItem('${columns[0].endpoint}', ${item[columns[0].key]})">
+                        🗑️ Eliminar
+                    </button>
+                </td>`;
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            return html;
+        }
+
+        // Función para eliminar elementos
+        async function deleteItem(endpoint, id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este elemento?')) {
+                try {
+                    await apiRequest(`${endpoint}/${id}`, 'DELETE');
+                    showMessage('Elemento eliminado correctamente');
+                    
+                    // Recargar los datos correspondientes
+                    switch(endpoint) {
+                        case 'Repuesto':
+                            loadRepuestos();
+                            break;
+                        case 'Cliente':
+                            loadClientes();
+                            break;
+                        case 'Servicio':
+                            loadServicios();
+                            break;
+                        case 'Maquina':
+                            loadMaquinas();
+                            break;
+                    }
+                } catch (error) {
+                    showMessage('Error al eliminar el elemento', 'error');
+                }
+            }
+        }
+
+        // REPUESTOS
+        async function loadRepuestos() {
+            const container = document.getElementById('repuestos-data');
+            container.innerHTML = '<div class="loading">Cargando repuestos...</div>';
+            
+            try {
+                const data = await apiRequest('Repuesto');
+                const columns = [
+                    { key: 'id', label: 'ID', endpoint: 'Repuesto' },
+                    { key: 'nombre', label: 'Nombre' },
+                    { key: 'precio', label: 'Precio' },
+                    { key: 'stock', label: 'Stock' }
+                ];
+                container.innerHTML = createTable(data, columns);
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error al cargar repuestos</div>';
+            }
+        }
+
+        document.getElementById('repuestoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const repuesto = {
+                nombre: document.getElementById('repuesto-nombre').value,
+                precio: parseFloat(document.getElementById('repuesto-precio').value),
+                stock: parseInt(document.getElementById('repuesto-stock').value)
+            };
+
+            try {
+                await apiRequest('Repuesto', 'POST', repuesto);
+                showMessage('Repuesto agregado correctamente');
+                this.reset();
+                loadRepuestos();
+            } catch (error) {
+                showMessage('Error al agregar repuesto', 'error');
+            }
+        });
+
+        // CLIENTES
+        async function loadClientes() {
+            const container = document.getElementById('clientes-data');
+            container.innerHTML = '<div class="loading">Cargando clientes...</div>';
+            
+            try {
+                const data = await apiRequest('Cliente');
+                const columns = [
+                    { key: 'id', label: 'ID', endpoint: 'Cliente' },
+                    { key: 'nombre', label: 'Nombre' },
+                    { key: 'email', label: 'Email' },
+                    { key: 'telefono', label: 'Teléfono' },
+                    { key: 'direccion', label: 'Dirección' }
+                ];
+                container.innerHTML = createTable(data, columns);
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error al cargar clientes</div>';
+            }
+        }
+
+        document.getElementById('clienteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const cliente = {
+                nombre: document.getElementById('cliente-nombre').value,
+                email: document.getElementById('cliente-email').value,
+                telefono: document.getElementById('cliente-telefono').value,
+                direccion: document.getElementById('cliente-direccion').value
+            };
+
+            try {
+                await apiRequest('Cliente', 'POST', cliente);
+                showMessage('Cliente agregado correctamente');
+                this.reset();
+                loadClientes();
+            } catch (error) {
+                showMessage('Error al agregar cliente', 'error');
+            }
+        });
+
+        // SERVICIOS
+        async function loadServicios() {
+            const container = document.getElementById('servicios-data');
+            container.innerHTML = '<div class="loading">Cargando servicios...</div>';
+            
+            try {
+                const data = await apiRequest('Servicio');
+                const columns = [
+                    { key: 'id', label: 'ID', endpoint: 'Servicio' },
+                    { key: 'nombre', label: 'Nombre' },
+                    { key: 'precio', label: 'Precio' },
+                    { key: 'duracion', label: 'Duración (hrs)' },
+                    { key: 'descripcion', label: 'Descripción' }
+                ];
+                container.innerHTML = createTable(data, columns);
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error al cargar servicios</div>';
+            }
+        }
+
+        document.getElementById('servicioForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const servicio = {
+                nombre: document.getElementById('servicio-nombre').value,
+                precio: parseFloat(document.getElementById('servicio-precio').value),
+                duracion: parseFloat(document.getElementById('servicio-duracion').value),
+                descripcion: document.getElementById('servicio-descripcion').value
+            };
+
+            try {
+                await apiRequest('Servicio', 'POST', servicio);
+                showMessage('Servicio agregado correctamente');
+                this.reset();
+                loadServicios();
+            } catch (error) {
+                showMessage('Error al agregar servicio', 'error');
+            }
+        });
+
+        // REPARACIONES
+        async function loadReparaciones() {
+            const container = document.getElementById('reparaciones-data');
+            container.innerHTML = '<div class="loading">Cargando reparaciones...</div>';
+            
+            try {
+                const data = await apiRequest('Reparacione');
+                const columns = [
+                    { key: 'id', label: 'ID', endpoint: 'Reparacione' },
+                    { key: 'clienteId', label: 'Cliente ID' },
+                    { key: 'maquinaId', label: 'Máquina ID' },
+                    { key: 'fecha', label: 'Fecha' },
+                    { key: 'estado', label: 'Estado' },
+                    { key: 'descripcion', label: 'Descripción' }
+                ];
+                container.innerHTML = createTable(data, columns);
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error al cargar reparaciones</div>';
+            }
+        }
+
+        // MÁQUINAS
+        async function loadMaquinas() {
+            const container = document.getElementById('maquinas-data');
+            container.innerHTML = '<div class="loading">Cargando máquinas...</div>';
+            
+            try {
+                const data = await apiRequest('Maquina');
+                const columns = [
+                    { key: 'id', label: 'ID', endpoint: 'Maquina' },
+                    { key: 'nombre', label: 'Nombre/Modelo' },
+                    { key: 'marca', label: 'Marca' },
+                    { key: 'año', label: 'Año' },
+                    { key: 'numeroSerie', label: 'N° Serie' }
+                ];
+                container.innerHTML = createTable(data, columns);
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error al cargar máquinas</div>';
+            }
+        }
+
+        document.getElementById('maquinaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const maquina = {
+                nombre: document.getElementById('maquina-nombre').value,
+                marca: document.getElementById('maquina-marca').value,
+                año: parseInt(document.getElementById('maquina-año').value),
+                numeroSerie: document.getElementById('maquina-serie').value
+            };
+
+            try {
+                await apiRequest('Maquina', 'POST', maquina);
+                showMessage('Máquina agregada correctamente');
+                this.reset();
+                loadMaquinas();
+            } catch (error) {
+                showMessage('Error al agregar máquina', 'error');
+            }
+        });
+
+        // Cargar datos iniciales
+        window.addEventListener('load', function() {
+            loadRepuestos();
+        });
+    </script>
+</body>
+</html>
