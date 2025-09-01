@@ -574,10 +574,18 @@
                 stock: parseInt(document.getElementById('repuesto-stock').value)
             };
             try {
-                await apiRequest('Repuesto', 'POST', repuesto);
-                showMessage('Repuesto agregado correctamente');
-                this.reset();
-                loadRepuestos();
+                if(await apiRequest('Repuesto/nombre/' + encodeURIComponent(repuesto.nombre)).length > 0) {
+                    showMessage('Error: Ya existe un repuesto con ese nombre', 'error');
+                    return; 
+
+
+                }else{
+                    await apiRequest('Repuesto', 'POST', repuesto);
+                    showMessage('Repuesto agregado correctamente');
+                    this.reset();
+                    loadRepuestos();
+                }
+
             } catch {}
         });
 
