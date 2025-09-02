@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- Dentro del form id="maquinaForm" -->
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -137,6 +137,12 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
+                                    <label>Cliente:</label>
+                                    <select id="reparacion-cliente" required></select>
+                                        <option value="">Seleccione un cliente</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label>Fecha Ingreso:</label>
                                     <input type="datetime-local" id="reparacion-fecha-ingreso" required>
                                 </div>
@@ -197,10 +203,18 @@
                                     <label>Año:</label>
                                     <input type="number" id="maquina-año" min="1900" max="2030">
                                 </div>
+                                <div class="form-group"></div>
+                                    <label>modelo:</label>
+                                    <input type="text" id="maquina-modelo">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Número de Serie:</label>
                                 <input type="text" id="maquina-serie">
+                            </div>
+                            <div class="form-group">
+                                <label>Descripcion:</label>
+                                <input type="text" id="maquina-descipcion">
                             </div>
                             <button type="submit" class="btn">Agregar Máquina</button>
                         </form>

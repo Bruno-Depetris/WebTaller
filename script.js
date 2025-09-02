@@ -198,6 +198,12 @@
                 numeroSerie: document.getElementById('maquina-serie').value
             };
             try {
+                // Validar que no exista una máquina con el mismo número de serie
+                const existentes = await apiRequest('Maquina/numeroSerie/' + encodeURIComponent(maquina.numeroSerie));
+                if (existentes && existentes.length > 0) {
+                    showMessage('Error: Ya existe una máquina con ese número de serie', 'error');
+                    return;
+                }
                 await apiRequest('Maquina', 'POST', maquina);
                 showMessage('Máquina agregada correctamente');
                 this.reset();
@@ -345,9 +351,7 @@
                 this.reset();
                 loadReparaciones();
             } catch (err) {}
-        });
-
-        // DETALLE REPARACION
+        });   // DETALLE REPARACION
         async function loadDetalleReparacion() {
             const container = document.getElementById('detalle-reparacion-data');
             container.innerHTML = '<div class="loading">Cargando detalles de reparación...</div>';
