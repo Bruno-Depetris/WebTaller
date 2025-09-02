@@ -46,9 +46,14 @@ function createTable(data, columns) {
 
 // Eliminar elemento
 window.deleteItem = async function (endpoint, id) {
+    // Normalizar endpoint para coincidencia exacta con la API
+    let apiEndpoint = endpoint;
+    if (endpoint === 'Reparacione') apiEndpoint = 'Reparacion';
+    if (endpoint === 'DetalleReparacion') apiEndpoint = 'DetalleReparacion';
+    // Puedes agregar más normalizaciones si tu backend usa otros nombres
     if (confirm('¿Estás seguro de que quieres eliminar este elemento?')) {
         try {
-            await apiRequest(`${endpoint}/${id}`, 'DELETE');
+            await apiRequest(`${apiEndpoint}/${id}`, 'DELETE');
             showMessage('Elemento eliminado correctamente');
             switch (endpoint) {
                 case 'Repuesto': loadRepuestos(); break;
